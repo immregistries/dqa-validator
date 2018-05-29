@@ -5,12 +5,15 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.immregistries.dqa.codebase.client.reference.CodesetType;
 import org.immregistries.dqa.core.util.DateUtility;
+import org.immregistries.dqa.hl7util.model.Hl7Location;
+import org.immregistries.dqa.hl7util.model.MetaFieldInfo;
 import org.immregistries.dqa.vxu.DqaMessageHeader;
 import org.immregistries.dqa.vxu.DqaMessageReceived;
 import org.immregistries.dqa.vxu.DqaNextOfKin;
 import org.immregistries.dqa.vxu.DqaPatient;
 import org.immregistries.dqa.vxu.DqaVaccination;
 import org.immregistries.dqa.vxu.PatientImmunity;
+import org.immregistries.dqa.vxu.VxuField;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +100,7 @@ public class CodeCollection {
     this.codeCountList = collectMessageCodesNew(message);
   }
 
-  List<CollectionBucket> collectMessageCodesNew(DqaMessageReceived message) {
+  private List<CollectionBucket> collectMessageCodesNew(DqaMessageReceived message) {
     List<CollectionBucket> bucketList = new ArrayList<>();
 
     // from the message, count the types of codes.
@@ -126,79 +129,86 @@ public class CodeCollection {
         // bucketList);
         // }
       }
-      addCounts(CodesetType.VACCINATION_ACTION_CODE, adminType, v.getActionCode(), bucketList);
-      addCounts(CodesetType.VACCINATION_CVX_CODE, v.getInformationSource(), v.getAdminCvxCode(),
-          bucketList);
-      addCounts(CodesetType.ADMINISTRATION_UNIT, adminType, v.getAmountUnit(), bucketList);
-      addCounts(CodesetType.BODY_ROUTE, adminType, v.getBodyRouteCode(), bucketList);
-      addCounts(CodesetType.BODY_SITE, adminType, v.getBodySiteCode(), bucketList);
-      addCounts(CodesetType.VACCINATION_COMPLETION, adminType, v.getCompletionCode(), bucketList);
-      addCounts(CodesetType.VACCINATION_CONFIDENTIALITY, adminType, v.getConfidentialityCode(),
-          bucketList);
-      addCounts(CodesetType.VACCINATION_CVX_CODE, adminType, v.getAdminCvxCode(), bucketList);
-      addCounts(CodesetType.VACCINATION_CPT_CODE, adminType, v.getAdminCptCode(), bucketList);
-      addCounts(CodesetType.FINANCIAL_STATUS_CODE, adminType, v.getFinancialEligibilityCode(),
-          bucketList);
-      addCounts(CodesetType.VACCINATION_INFORMATION_SOURCE, "RXA-9", v.getInformationSource(),
-          bucketList);
-      addCounts(CodesetType.VACCINATION_MANUFACTURER_CODE, adminType, v.getManufacturerCode(),
-          bucketList);
-      addCounts(CodesetType.VACCINE_PRODUCT, adminType, v.getProduct(), bucketList);
-      addCounts(CodesetType.VACCINATION_REFUSAL, adminType, v.getRefusalCode(), bucketList);
-      addCounts(CodesetType.VACCINATION_NDC_CODE, adminType, v.getAdminNdc(), bucketList);
+      MetaFieldInfo mfi = v.getMetaFieldInfo(VxuField.VACCINATION_ADMIN_CODE);
 
+      String loc = "";
+
+      if (mfi != null) {
+        Hl7Location l = mfi.getHl7Location();
+        loc = l.getBaseReference();
+      }
+
+//      addCounts(CodesetType.VACCINATION_ACTION_CODE, adminType, v.getActionCode(), bucketList);
+      addCounts(VxuField.VACCINATION_ACTION_CODE, loc, v.getActionCode(), bucketList);
+
+      addCounts(VxuField.VACCINATION_CVX_CODE, v.getInformationSource(), v.getAdminCvxCode(), bucketList);
+      addCounts(VxuField.VACCINATION_ADMINISTERED_UNIT, adminType, v.getAmountUnit(), bucketList);
+      addCounts(VxuField.VACCINATION_BODY_ROUTE, adminType, v.getBodyRouteCode(), bucketList);
+      addCounts(VxuField.VACCINATION_BODY_SITE, adminType, v.getBodySiteCode(), bucketList);
+      addCounts(VxuField.VACCINATION_COMPLETION_STATUS, adminType, v.getCompletionCode(), bucketList);
+      addCounts(VxuField.VACCINATION_CONFIDENTIALITY_CODE, adminType, v.getConfidentialityCode(),
+          bucketList);
+      addCounts(VxuField.VACCINATION_CVX_CODE, adminType, v.getAdminCvxCode(), bucketList);
+      addCounts(VxuField.VACCINATION_CPT_CODE, adminType, v.getAdminCptCode(), bucketList);
+      addCounts(VxuField.VACCINATION_FINANCIAL_ELIGIBILITY_CODE, adminType, v.getFinancialEligibilityCode(),
+          bucketList);
+      addCounts(VxuField.VACCINATION_INFORMATION_SOURCE, "RXA-9", v.getInformationSource(),
+          bucketList);
+      addCounts(VxuField.VACCINATION_MANUFACTURER_CODE, adminType, v.getManufacturerCode(),
+          bucketList);
+      addCounts(VxuField.VACCINATION_PRODUCT, adminType, v.getProduct(), bucketList);
+      addCounts(VxuField.VACCINATION_REFUSAL_REASON, adminType, v.getRefusalCode(), bucketList);
+      addCounts(VxuField.VACCINATION_NDC_CODE, adminType, v.getAdminNdc(), bucketList);
     }
 
-    addCounts(CodesetType.ACKNOWLEDGEMENT_TYPE, "", dqaMessageHeader.getAckTypeAcceptCode(),
+    addCounts(VxuField.MESSAGE_ACCEPT_ACK_TYPE, "", dqaMessageHeader.getAckTypeAcceptCode(),
         bucketList);
-    addCounts(CodesetType.ACKNOWLEDGEMENT_TYPE, "", dqaMessageHeader.getAckTypeApplicationCode(),
+    addCounts(VxuField.MESSAGE_ACCEPT_ACK_TYPE, "", dqaMessageHeader.getAckTypeApplicationCode(),
         bucketList);
 
     for (DqaNextOfKin k : kinList) {
       if (k.getAddress() != null) {
-        addCounts(CodesetType.ADDRESS_TYPE, "", k.getAddress().getTypeCode(), bucketList);
+        addCounts(VxuField.NEXT_OF_KIN_ADDRESS_TYPE, "", k.getAddress().getTypeCode(), bucketList);
       }
-      addCounts(CodesetType.PERSON_RELATIONSHIP, "", k.getRelationshipCode(), bucketList);
+      addCounts(VxuField.NEXT_OF_KIN_RELATIONSHIP, "", k.getRelationshipCode(), bucketList);
     }
 
     if (patient.getPatientAddress() != null) {
-      addCounts(CodesetType.ADDRESS_TYPE, "", patient.getPatientAddress().getTypeCode(),
-          bucketList);
+      addCounts(VxuField.PATIENT_ADDRESS_TYPE, "", patient.getPatientAddress().getTypeCode(), bucketList);
     }
 
-    addCounts(CodesetType.BIRTH_ORDER, "", patient.getBirthOrder(), bucketList);
-    addCounts(CodesetType.PATIENT_CLASS, "", patient.getPatientClassCode(), bucketList);
-    addCounts(CodesetType.PATIENT_ETHNICITY, "", patient.getEthnicityCode(), bucketList);
-    addCounts(CodesetType.PATIENT_SEX, "", patient.getSexCode(), bucketList);
+    addCounts(VxuField.PATIENT_BIRTH_ORDER, "", patient.getBirthOrder(), bucketList);
+    addCounts(VxuField.PATIENT_CLASS, "", patient.getPatientClassCode(), bucketList);
+    addCounts(VxuField.PATIENT_ETHNICITY, "", patient.getEthnicityCode(), bucketList);
+    addCounts(VxuField.PATIENT_GENDER, "", patient.getSexCode(), bucketList);
 
     for (PatientImmunity p : patient.getPatientImmunityList()) {
-      addCounts(CodesetType.EVIDENCE_OF_IMMUNITY, "", p.getImmunityCode(), bucketList);
+      addCounts(VxuField.PATIENT_IMMUNITY_CODE, "", p.getImmunityCode(), bucketList);
     }
 
-    addCounts(CodesetType.PERSON_NAME_TYPE, "", patient.getNameTypeCode(), bucketList);
+    addCounts(VxuField.PATIENT_NAME_TYPE_CODE, "", patient.getNameTypeCode(), bucketList);
     if (patient.getPhone() != null) {
-      addCounts(CodesetType.TELECOMMUNICATION_USE, "", patient.getPhone().getTelUseCode(),
+      addCounts(VxuField.PATIENT_PHONE_TEL_USE_CODE, "", patient.getPhone().getTelUseCode(),
           bucketList);
-      addCounts(CodesetType.TELECOMMUNICATION_EQUIPMENT, "", patient.getPhone().getTelEquipCode(),
+      addCounts(VxuField.PATIENT_PHONE_TEL_EQUIP_CODE, "", patient.getPhone().getTelEquipCode(),
           bucketList);
     }
-    addCounts(CodesetType.PERSON_LANGUAGE, "", patient.getPrimaryLanguageCode(), bucketList);
-    addCounts(CodesetType.PHYSICIAN_NUMBER, "", patient.getPhysicianNumber(), bucketList);
-    addCounts(CodesetType.PATIENT_PROTECTION, "", patient.getProtectionCode(), bucketList);
-    addCounts(CodesetType.PATIENT_PUBLICITY, "", patient.getPublicityCode(), bucketList);
-    addCounts(CodesetType.PATIENT_RACE, "", patient.getRaceCode(), bucketList);
-    addCounts(CodesetType.FINANCIAL_STATUS_CODE, "", patient.getFinancialEligibilityCode(),
+    addCounts(VxuField.PATIENT_PRIMARY_LANGUAGE, "", patient.getPrimaryLanguageCode(), bucketList);
+    addCounts(VxuField.PATIENT_PRIMARY_PHYSICIAN_ID, "", patient.getPhysicianNumber(), bucketList);
+    addCounts(VxuField.PATIENT_PROTECTION_INDICATOR, "", patient.getProtectionCode(), bucketList);
+    addCounts(VxuField.PATIENT_PUBLICITY_CODE, "", patient.getPublicityCode(), bucketList);
+    addCounts(VxuField.PATIENT_RACE, "", patient.getRaceCode(), bucketList);
+    addCounts(VxuField.PATIENT_VFC_STATUS, "", patient.getFinancialEligibilityCode(),
         bucketList);
 
     return bucketList;
   }
 
-  void addCounts(CodesetType ct, String attribute, String value, List<CollectionBucket> existing) {
+  void addCounts(VxuField vf, String attribute, String value, List<CollectionBucket> existing) {
     if (StringUtils.isBlank(value)) {
       return;// don't add anything to the count.
     }
-
-    CollectionBucket cbLookup = new CollectionBucket(ct, attribute, value);
+    CollectionBucket cbLookup = new CollectionBucket(vf, attribute, value);
     int idx = existing.indexOf(cbLookup);
     if (idx > -1) {
       CollectionBucket cb = existing.get(idx);

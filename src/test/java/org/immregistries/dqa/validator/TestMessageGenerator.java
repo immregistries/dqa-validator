@@ -26,6 +26,17 @@ public class TestMessageGenerator {
   private static String EXAMPLE_VXU_III =
       MSH + PID2 + NK1 + ORC + RXA + RXR + OBX + ORC + RXA + RXR + OBX;
 
+  private final String CAIR_EXAMPLE =
+            "MSH|^~\\&|1255-60-20|1255-60-20|CAIR|CAIRCC|20180424103726||VXU^V04^VXU_V04|Q103084826T103060205|P|2.5.1|||ER|AL||8859/1|||Z22^CDCPHINVS|WESTLANSING\r"
+          + "PID|1||9x9x9x9x^^^MRN^MR~1x1x1x1x^^^MRN&2.16.840.1.000000.3.3540.100&ISO^MR||NCIT^TEST^^^^^L||19850904|F||1002-5^American Indian or Alaska Native^HL70005|375 HILLMONT AVE^^LANSING^MI^930031650^^H^^|||||A^Separated^HL70002||2004410958^^^FIN^AN||||2186-5^Non-Hispanic^CDCREC\r"
+          + "PD1|||^^^^^^^^^WESTLANSING|||||||||N|20180424|||A|20180424\r"
+          + "ORC|RE|774684925^SF-002634^2.16.840.1.113883.3.3540.42.999322.19271314^ISO|{71A3DE42-084E-4BCC-8B68-30AF1836DFB9}^SF-002634|||||||||^Chan^Tiffany^C^^PA|||||SF-002634^West Lansing Medical Clinic^HL70362\r"
+          + "RXA|0|1|20180420134500||83^Hep A, ped/adol, 2 dose^CVX|0.5|mL^Milliliter^UCUM^^^^^^Milliliter||00^New immunization record^NIP001||^^^WESTLANSING^^^^^133 W Santa Clara Street^^Lansing^^93001||||987654321|20180420|SKB^Glaxo Smith Kline^MVX^^^^^^Glaxo Smith Kline|||CP|A|20180420134909\r"
+          + "RXR|C28161^IM^NCIT^^^^^^IM|LD^Left Deltoid^HL70163^^^^^^Left Deltoid\r"
+          + "OBX|1|CE|64994-7^Vaccine funding program eligibility category^LN|1|V01^Not VFC Eligible^HL70064^^^^^^Not VFC Eligible||||||F|||20180420134909|||VXC40^Eligibility captured at the Immunization level^CDCPHINVS\r"
+          + "OBX|2|CE|30956-7^Vaccine Type^LN|1|85^Hepatitis A^CVX^^^^^^Hepatitis A||||||F|||20180420134909\r"
+          + "OBX|3|TS|29768-9^Date vaccine information sheet published^LN|1|20160720||||||F|||20180420134909";
+
 
   private static final Map<String, String> SEG_MAP = new LinkedHashMap<String, String>();
   private static final List<String> SEG_LIST = new LinkedList<String>();
@@ -127,4 +138,7 @@ public class TestMessageGenerator {
   }
 
 
+  public String getCairExample() {
+    return CAIR_EXAMPLE;
+  }
 }

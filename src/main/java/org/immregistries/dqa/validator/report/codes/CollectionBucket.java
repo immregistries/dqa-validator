@@ -2,15 +2,25 @@ package org.immregistries.dqa.validator.report.codes;
 
 import java.util.Objects;
 import org.immregistries.dqa.codebase.client.reference.CodesetType;
+import org.immregistries.dqa.vxu.VxuField;
 
 public class CollectionBucket {
 
-  String type;
-  String attribute;
-  String value;
-  int count;
+  private String type;
+  private String source;
+  private String attribute;
+  private String value;
+  private int count;
   private String status;
   private String label;
+
+  public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
 
   public String getLabel() {
     return label;
@@ -28,10 +38,8 @@ public class CollectionBucket {
     this.status = status;
   }
 
-  public CollectionBucket(CodesetType type, String attribute, String value) {
-    this.type = type.getType();
-    this.attribute = attribute;
-    this.value = value;
+  public CollectionBucket(VxuField field, String attribute, String value) {
+    this(field.toString(), attribute, value);
   }
 
   public CollectionBucket(String type, String attribute, String value) {
@@ -63,15 +71,15 @@ public class CollectionBucket {
     }
     CollectionBucket that = (CollectionBucket) o;
 
-    return Objects.equals(type, that.type)
-        && Objects.equals(attribute, that.attribute)
-        && Objects.equals(value, that.value);
+    return Objects.equals(this.type, that.type)
+        && Objects.equals(this.attribute, that.attribute)
+        && Objects.equals(this.source, that.source)
+        && Objects.equals(this.value, that.value);
   }
 
   @Override
   public int hashCode() {
-
-    return Objects.hash(type, attribute, value);
+    return Objects.hash(type, source, attribute, value);
   }
 
   public int getCount() {
