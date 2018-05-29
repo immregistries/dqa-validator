@@ -40,7 +40,7 @@ public enum ReportScorer {
   }
 
   public DqaMessageMetrics getDqaMetricsFor(DqaMessageServiceResponse validationResults) {
-    DqaMessageMetrics msgMetrics = eval.toMetrics(validationResults.getValidationResults());
+    DqaMessageMetrics msgMetrics = eval.toMetrics(validationResults);
     CodeCollection cc = new CodeCollection(validationResults.getMessageObjects());
     msgMetrics.setCodes(cc);
     VaccineCollection vc = new VaccineCollection(validationResults.getMessageObjects());

@@ -125,7 +125,7 @@ public class ReportScorerTest {
 
   public DqaMessageMetrics getExampleMetrics() {
     DqaMessageServiceResponse response = msgSrvc.processMessage(this.testMessage);
-    return eval.toMetrics(response.getValidationResults());
+    return eval.toMetrics(response);
   }
 
   @Test

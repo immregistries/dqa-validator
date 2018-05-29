@@ -3,24 +3,30 @@ package org.immregistries.dqa.validator.report;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.immregistries.dqa.validator.DqaMessageServiceResponse;
 import org.immregistries.dqa.validator.detection.Detection;
-import org.immregistries.dqa.vxu.VxuObject;
 import org.immregistries.dqa.validator.detection.ValidationReport;
 import org.immregistries.dqa.validator.engine.ValidationRuleResult;
 import org.immregistries.dqa.validator.engine.rules.nextofkin.NextOfKinIsPresent;
 import org.immregistries.dqa.validator.engine.rules.vaccination.VaccinationIsPresent;
+import org.immregistries.dqa.vxu.DqaPatient;
+import org.immregistries.dqa.vxu.VxuObject;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum MessageResponseEvaluator {
-  INSTANCE;
+                                      INSTANCE;
   private static final Logger logger = LoggerFactory.getLogger(MessageResponseEvaluator.class);
 
-  public DqaMessageMetrics toMetrics(List<ValidationRuleResult> ruleResults) {
+  public DqaMessageMetrics toMetrics(DqaMessageServiceResponse validationResults) {
+    List<ValidationRuleResult> ruleResults = validationResults.getValidationResults();
     DqaMessageMetrics metrics = new DqaMessageMetrics();
     Map<Detection, Integer> attributeCounts = makeCountMap(ruleResults);
     metrics.setAttributeCounts(attributeCounts);
     metrics.getObjectCounts().putAll(makeObjectCounts(ruleResults));
+    metrics.getPatientAgeCounts().put(makePatientAgeCounts(validationResults), 1);
     logger.info(metrics.toString());
     return metrics;
   }
@@ -53,6 +59,21 @@ public enum MessageResponseEvaluator {
     objCounts.put(VxuObject.VACCINATION, vaccCount);
     objCounts.put(VxuObject.NEXT_OF_KIN, nokCount);
     return objCounts;
+  }
+
+  protected Integer makePatientAgeCounts(
+      DqaMessageServiceResponse validationResults) {
+
+    DqaPatient patient = validationResults.getMessageObjects().getPatient();
+    if (patient.getBirthDate() != null
+        && validationResults.getMessageObjects().getReceivedDate() != null) {
+      LocalDate birthDate = new LocalDate(patient.getBirthDate());
+      LocalDate recDate = new LocalDate(validationResults.getMessageObjects().getReceivedDate());
+      Period period = new Period(recDate, birthDate);
+      Integer age = new Integer(Math.abs(period.getYears()));
+      return age;
+    }
+    return -1;
   }
 
   protected Map<Detection, Integer> makeCountMap(List<ValidationRuleResult> results) {

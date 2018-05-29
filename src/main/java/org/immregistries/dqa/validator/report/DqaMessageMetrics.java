@@ -12,10 +12,19 @@ public class DqaMessageMetrics {
 
   private Map<VxuObject, Integer> objectCounts = new HashMap<>();
   private Map<Detection, Integer> attributeCounts = new HashMap<>();
+  private Map<Integer, Integer> patientAgeCounts = new HashMap<>();
   private CodeCollection codes = new CodeCollection();
   private VaccineCollection vaccinations = new VaccineCollection();
   private DateTime firstMessageReceived;
   private DateTime lastMessageReceived;
+
+  public Map<Integer, Integer> getPatientAgeCounts() {
+    return patientAgeCounts;
+  }
+
+  public void setPatientAgeCounts(Map<Integer, Integer> patientAgeCounts) {
+    this.patientAgeCounts = patientAgeCounts;
+  }
 
   public VaccineCollection getVaccinations() {
     return vaccinations;
@@ -68,9 +77,10 @@ public class DqaMessageMetrics {
 
   @Override
   public String toString() {
-    return "DqaMessageMetrics [objectCounts=" + objectCounts + ", attributeCounts="
-        + attributeCounts + ", codeCounts=" + codes + ", firstMessageReceived="
-        + firstMessageReceived + ", lastMessageReceived=" + lastMessageReceived + "]";
+    return "DqaMessageMetrics [objectCounts=" + objectCounts + ",patientAgeCounts="
+        + patientAgeCounts + ", attributeCounts=" + attributeCounts + ", codeCounts=" + codes
+        + ", firstMessageReceived=" + firstMessageReceived + ", lastMessageReceived="
+        + lastMessageReceived + "]";
   }
 
 

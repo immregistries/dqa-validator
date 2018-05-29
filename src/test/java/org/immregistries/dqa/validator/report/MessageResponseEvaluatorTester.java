@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.immregistries.dqa.validator.DqaMessageServiceResponse;
 import org.immregistries.dqa.validator.detection.Detection;
 import org.immregistries.dqa.validator.detection.ValidationReport;
 import org.immregistries.dqa.validator.engine.ValidationRuleResult;
@@ -19,7 +21,9 @@ public class MessageResponseEvaluatorTester {
   @Test
   public void test() {
     MessageResponseEvaluator eval = MessageResponseEvaluator.INSTANCE;
-    DqaMessageMetrics metrics = eval.toMetrics(generateTestSubject());
+    DqaMessageServiceResponse validationResults = new DqaMessageServiceResponse();
+    validationResults.setValidationResults(generateTestSubject());
+    DqaMessageMetrics metrics = eval.toMetrics(validationResults);
     assertNotNull(metrics);
     assertEquals("should have the right number of object types represented", 4,
         metrics.getObjectCounts().size());
