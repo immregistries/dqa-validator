@@ -5,7 +5,7 @@
 
 	<groupId>org.immregistries</groupId>
 	<artifactId>dqa-validator</artifactId>
-	<version>2018.4-BETA</version>
+	<version>2018.5-BETA</version>
 	<packaging>jar</packaging>
 
 	<name>dqa-validator</name>
@@ -16,7 +16,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
    		<maven.compiler.target>1.7</maven.compiler.target>
-		<mqe.version>2018.4</mqe.version>
+		<mqe.version>2018.5-BETA</mqe.version>
 	</properties>
 
 	<dependencies>
